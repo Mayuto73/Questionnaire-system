@@ -125,8 +125,8 @@ const SURVEY = {
   intro: [
     ["Hello! I am a Japanese exchange student at Alajärven lukio. I am doing a research project about environmental problems, education and IT.",
      "Hei! Olen japanilainen vaihto-oppilas Alajärven lukiossa. Teen tutkimusprojektia ympäristöongelmista, koulutuksesta ja tietotekniikasta."],
-    ["This survey is anonymous and takes about 5–7 minutes. There are no right or wrong answers, so please answer honestly. Thank you!",
-     "Kysely on anonyymi, ja siihen vastaaminen kestää noin 5–7 minuuttia. Oikeita tai vääriä vastauksia ei ole, joten vastaa rehellisesti. Kiitos avusta!"]
+    ["This survey is anonymous and takes about 2-4 minutes. There are no right or wrong answers, so please answer honestly. Thank you!",
+     "Kysely on anonyymi, ja siihen vastaaminen kestää noin 2-4 minuuttia. Oikeita tai vääriä vastauksia ei ole, joten vastaa rehellisesti. Kiitos avusta!"]
   ],
   ui: {
     start: ["Start", "Aloita"], next: ["Next", "Seuraava"], back: ["Back", "Takaisin"],
@@ -137,7 +137,7 @@ const SURVEY = {
     close: ["Your answers will help me understand how young people think about environmental problems and IT. You can close this page now.",
             "Vastauksesi auttavat minua ymmärtämään, miten nuoret ajattelevat ympäristöongelmista ja tietotekniikasta. Voit nyt sulkea tämän sivun."]
   },
-  endpoint: "", // URL of the Apps Script web app. Empty = demo mode (nothing is sent)
+  endpoint: "https://script.google.com/macros/s/AKfycbxTeJREL-Uvc7IFliio-h84QwXSKzrrhw6k-_k67jubqu6Yi2VDvcH4TKEB6JY7Tg_7/exec", // URL of the Apps Script web app. Empty = demo mode (nothing is sent)
   questions: [
     { id: "q0", s: S.a, type: "choice", t: ["Do you know the country Japan?", "Tunnetko Japanin maana?"],
       o: [["Yes, I know it well", "Kyllä, tunnen sen hyvin"], ["I know a little", "Tunnen sen vähän"],
