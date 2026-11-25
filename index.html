@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kysely / Survey</title>
+<style>
+/* デジタル庁デザインシステムのトークンに合わせた値。
+   正式採用時は公式リポジトリの global.css と各コンポーネントCSSに差し替えてください。 */
+:root{
+  --blue-900:#0017c1; --blue-1000:#00118f; --blue-50:#f0f3ff;
+  --ink:#1a1a1a; --sub:#4d4d4d; --line:#8080808c; --line-strong:#666; --soft:#f2f2f2;
+  --focus:#ffd43d; --err:#ec0000;
+  --font:"Noto Sans JP","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font:400 1rem/1.7 var(--font);color:var(--ink);background:#fff;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+main{max-width:34rem;margin:0 auto;padding:1.5rem 1rem 4rem}
+.site{font-size:.875rem;color:var(--sub);margin:0 0 .75rem}
+.bar{height:4px;background:var(--soft);border-radius:2px;overflow:hidden;margin-bottom:.5rem}
+.bar i{display:block;height:100%;background:var(--blue-900);transition:width .25s}
+.count{font-size:.875rem;color:var(--sub);margin:0 0 2rem}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{font-size:1.5rem;font-weight:700;line-height:1.5;padding:0;margin-bottom:1.5rem}
+h1:focus,legend:focus{outline:none}
+.opts{display:grid;gap:.75rem}
+.opt{display:flex;align-items:center;gap:.875rem;min-height:3.5rem;padding:.75rem 1rem;
+  border:2px solid var(--line-strong);border-radius:8px;cursor:pointer;background:#fff}
+.opt:hover{background:var(--blue-50);border-color:var(--blue-900)}
+.opt input{appearance:none;flex:none;width:1.5rem;height:1.5rem;margin:0;border:2px solid var(--line-strong);
+  border-radius:50%;background:#fff;display:grid;place-content:center}
+.opt input::after{content:"";width:.75rem;height:.75rem;border-radius:50%;background:var(--blue-900);transform:scale(0)}
+.opt input:checked{border-color:var(--blue-900)}
+.opt input:checked::after{transform:scale(1)}
+.opt:has(input:checked){border-color:var(--blue-900);background:var(--blue-50)}
+.opt:has(input:focus-visible){outline:4px solid #000;outline-offset:2px;box-shadow:0 0 0 2px var(--focus)}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
+.scale .opt{justify-content:center;font-size:1.25rem;font-weight:700;padding:.5rem}
+.scale .opt input{position:absolute;opacity:0;width:1px;height:1px}
+.scale .opt::before,.scale .opt::after{content:none}
+.ends{display:flex;justify-content:space-between;font-size:.875rem;color:var(--sub);margin-top:.5rem}
+textarea{width:100%;min-height:8rem;padding:.75rem 1rem;font:inherit;border:2px solid var(--line-strong);
+  border-radius:8px;resize:vertical}
+textarea:focus-visible,button:focus-visible,.back:focus-visible{outline:4px solid #000;outline-offset:2px;box-shadow:0 0 0 2px var(--focus)}
+.btn{display:block;width:100%;min-height:3.5rem;margin-top:1rem;padding:.75rem 1.5rem;font:700 1.125rem var(--font);
+  color:#fff;background:var(--blue-900);border:2px solid transparent;border-radius:8px;cursor:pointer}
+.btn:hover{background:var(--blue-1000)}
+.btn:disabled{background:var(--line-strong);cursor:wait}
+.btn.sub{color:var(--blue-900);background:#fff;border-color:var(--blue-900)}
+.back{margin-top:1.5rem;padding:.5rem 0;background:none;border:0;font:inherit;color:var(--blue-900);
+  text-decoration:underline;text-underline-offset:.2em;cursor:pointer}
+.msg{color:var(--err);font-weight:700;margin:1rem 0 0}
+.done h1{font-size:1.75rem;margin:2rem 0 1rem}
+.lang{display:flex;gap:.5rem;justify-content:flex-end;margin:0 0 .75rem}
+.lang button{min-height:2.25rem;padding:0 .875rem;border:1px solid var(--line-strong);border-radius:8px;background:#fff;
+  color:var(--ink);font:inherit;font-size:.875rem;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--blue-900);border-color:var(--blue-900);color:#fff}
+.lang button:focus-visible{outline:4px solid #000;outline-offset:2px;box-shadow:0 0 0 2px var(--focus)}
+.sec{font-size:.875rem;color:var(--sub);margin:0 0 .5rem}
+.hint{color:var(--sub);font-size:.875rem;margin:-1rem 0 1.25rem}
+.row{margin:0 0 1.75rem}
+.row b{display:block;font-weight:700;margin-bottom:.5rem}
+.opt input[type=checkbox]{border-radius:4px}
+.opt input[type=checkbox]::after{border-radius:2px}
+.opt.dis{opacity:.45;cursor:not-allowed}
+.intro h1{font-size:1.75rem;line-height:1.4;margin:0 0 1.5rem}
+.intro p{margin:0 0 1rem}
+html:not([data-theme="google"]) .site.i{display:none}
+[data-theme="google"] .intro h1{display:none}
+/* ===== Googleフォーム風テーマ（?theme=google または SURVEY.theme） ===== */
+[data-theme="google"]{--blue-900:#673ab7;--blue-1000:#512da8;--blue-50:#f3effb;--line-strong:#dadce0;
+  --ink:#202124;--sub:#5f6368;--font:"Google Sans",Roboto,"Noto Sans JP","Hiragino Sans",Arial,sans-serif}
+[data-theme="google"] body{background:#f0ebf8}
+[data-theme="google"] main{padding-top:.75rem}
+[data-theme="google"] .site{background:#fff;border:1px solid #dadce0;border-top:10px solid var(--blue-900);
+  border-radius:8px;padding:1.5rem;font-size:2rem;line-height:1.3;color:var(--ink);margin:0 0 .75rem}
+[data-theme="google"] .bar{display:none}
+[data-theme="google"] .card{background:#fff;border:1px solid #dadce0;border-radius:8px;padding:1.5rem}
+[data-theme="google"] .count{margin-bottom:1rem}
+[data-theme="google"] legend{font-size:1rem;font-weight:400;margin-bottom:1rem}
+[data-theme="google"] .opts{gap:.25rem}
+[data-theme="google"] .opt{border:0;min-height:2.75rem;padding:.25rem .5rem;border-radius:4px}
+[data-theme="google"] .opt:hover{background:#f1f3f4}
+[data-theme="google"] .opt:has(input:checked){background:transparent}
+[data-theme="google"] .opt input{border-color:#5f6368}
+[data-theme="google"] .opt input:checked{border-color:var(--blue-900)}
+[data-theme="google"] .scale .opt{border:1px solid #dadce0;font-weight:400}
+[data-theme="google"] .scale .opt:has(input:checked){background:var(--blue-50);border-color:var(--blue-900)}
+[data-theme="google"] textarea{border:0;border-bottom:1px solid #dadce0;border-radius:0;min-height:3rem}
+[data-theme="google"] textarea:focus{border-bottom:2px solid var(--blue-900)}
+[data-theme="google"] .btn{display:inline-block;width:auto;min-height:2.5rem;padding:.5rem 1.5rem;
+  font-size:.875rem;font-weight:500;border-radius:4px}
+[data-theme="google"] .done h1{font-size:1.25rem;font-weight:400;margin:0 0 .5rem}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main id="app" aria-live="polite"></main>
+
+<script>
+/* ===== Survey settings: edit only this part to make another survey =====
+   Every text is a pair [English, Finnish]. Answers are always saved in English,
+   so the spreadsheet stays consistent whichever language the student used. */
+const S = {
+  a: ["Before we start", "Aluksi"],
+  1: ["Section 1: Environmental Awareness", "Osio 1: Ympäristötietoisuus"],
+  2: ["Section 2: Personal Responsibility and Daily Life", "Osio 2: Henkilökohtainen vastuu ja arki"],
+  3: ["Section 3: Environmental Education", "Osio 3: Ympäristökasvatus"],
+  4: ["Section 4: IT × Environment", "Osio 4: IT × ympäristö"],
+  5: ["Section 5: Your Ideas and Opinions", "Osio 5: Ideasi ja mielipiteesi"],
+  6: ["About you", "Sinusta"]
+};
+const OTHER = ["Other", "Muu"], DK = ["I don't know", "En osaa sanoa"];
+const YN = [["Yes, definitely", "Kyllä, ehdottomasti"], ["Yes, to some extent", "Kyllä, jossain määrin"],
+            ["Not very much", "Ei kovin paljon"], ["No", "Ei"], DK];
+const OPT = ["Optional · 1–3 sentences", "Valinnainen · 1–3 virkettä"];
+
+const SURVEY = {
+  id: "env-it-2026-11",
+  lang: "fi",       // language shown first: "fi" or "en" (the URL can override it: ?lang=en)
+  theme: "digital", // "digital" or "google" (or add ?theme=google to the URL)
+  title: ["Environmental Awareness, Personal Responsibility and IT", "Ympäristötietoisuus, henkilökohtainen vastuu ja IT"],
+  intro: [
+    ["Hello! I am a Japanese exchange student at Alajärven lukio. I am doing a research project about environmental problems, education and IT.",
+     "Hei! Olen japanilainen vaihto-oppilas Alajärven lukiossa. Teen tutkimusprojektia ympäristöongelmista, koulutuksesta ja tietotekniikasta."],
+    ["This survey is anonymous and takes about 5–7 minutes. There are no right or wrong answers, so please answer honestly. Thank you!",
+     "Kysely on anonyymi, ja siihen vastaaminen kestää noin 5–7 minuuttia. Oikeita tai vääriä vastauksia ei ole, joten vastaa rehellisesti. Kiitos avusta!"]
+  ],
+  ui: {
+    start: ["Start", "Aloita"], next: ["Next", "Seuraava"], back: ["Back", "Takaisin"],
+    send: ["Submit", "Lähetä"], skip: ["Skip", "Ohita"], sendEmpty: ["Submit without answering", "Lähetä vastaamatta"],
+    sending: ["Sending…", "Lähetetään…"],
+    error: ["Could not send. Please check your connection and try again.", "Lähetys epäonnistui. Tarkista verkkoyhteys ja yritä uudelleen."],
+    thanks: ["Thank you for answering!", "Kiitos vastauksistasi!"],
+    close: ["Your answers will help me understand how young people think about environmental problems and IT. You can close this page now.",
+            "Vastauksesi auttavat minua ymmärtämään, miten nuoret ajattelevat ympäristöongelmista ja tietotekniikasta. Voit nyt sulkea tämän sivun."]
+  },
+  endpoint: "", // URL of the Apps Script web app. Empty = demo mode (nothing is sent)
+  questions: [
+    { id: "q0", s: S.a, type: "choice", t: ["Do you know the country Japan?", "Tunnetko Japanin maana?"],
+      o: [["Yes, I know it well", "Kyllä, tunnen sen hyvin"], ["I know a little", "Tunnen sen vähän"],
+          ["I have only heard the name", "Olen kuullut vain nimen"], ["No, I do not know it", "En, en tunne sitä"]] },
+
+    { id: "q1", s: S[1], type: "choice", t: ["How interested are you in environmental problems?", "Kuinka kiinnostunut olet ympäristöongelmista?"],
+      o: [["Very interested", "Erittäin kiinnostunut"], ["Somewhat interested", "Jonkin verran kiinnostunut"],
+          ["Not very interested", "En kovin kiinnostunut"], ["Not interested at all", "En lainkaan kiinnostunut"]] },
+    { id: "q2", s: S[1], type: "multi", max: 3, h: ["Select up to 3.", "Valitse enintään 3."],
+      t: ["Which environmental problems are you most concerned about?", "Mitkä ympäristöongelmat huolestuttavat sinua eniten?"],
+      o: [["Climate change / Global warming", "Ilmastonmuutos / ilmaston lämpeneminen"], ["Plastic pollution", "Muovisaaste"],
+          ["Deforestation", "Metsäkato"], ["Air pollution", "Ilmansaasteet"], ["Water pollution", "Vesien saastuminen"],
+          ["Loss of biodiversity", "Luonnon monimuotoisuuden väheneminen"], ["Food waste", "Ruokahävikki"],
+          ["Energy consumption", "Energiankulutus"], OTHER] },
+    { id: "q3", s: S[1], type: "choice", t: ["How much do you know about environmental problems and their causes?", "Kuinka paljon tiedät ympäristöongelmista ja niiden syistä?"],
+      o: [["A lot", "Paljon"], ["Some", "Jonkin verran"], ["A little", "Vähän"], ["Almost nothing", "Lähes ei mitään"]] },
+
+    { id: "q4", s: S[2], type: "choice",
+      t: ["Do you think individual actions can make a difference in solving environmental problems?", "Uskotko, että yksittäisen ihmisen teoilla voi olla merkitystä ympäristöongelmien ratkaisemisessa?"],
+      o: [["Yes, definitely", "Kyllä, ehdottomasti"], ["Yes, to some extent", "Kyllä, jossain määrin"], ["Not very much", "Ei kovin paljon"],
+          ["No, not at all", "Ei, ei lainkaan"], DK] },
+    { id: "q5", s: S[2], type: "grid",
+      t: ["How often do you do the following things in your daily life?", "Kuinka usein teet seuraavia asioita arjessasi?"],
+      h: ["Choose one answer for each activity.", "Valitse yksi vaihtoehto jokaiseen toimintaan."],
+      cols: [["Always", "Aina"], ["Often", "Usein"], ["Sometimes", "Joskus"], ["Rarely", "Harvoin"], ["Never", "Ei koskaan"]],
+      rows: [{ k: "recycling", t: ["Recycling waste", "Jätteiden kierrättäminen"] },
+             { k: "electricity", t: ["Saving electricity", "Sähkön säästäminen"] },
+             { k: "foodwaste", t: ["Avoiding food waste", "Ruokahävikin välttäminen"] },
+             { k: "transport", t: ["Using public transportation or cycling", "Julkisen liikenteen käyttäminen tai pyöräily"] },
+             { k: "purchases", t: ["Avoiding unnecessary purchases", "Tarpeettomien ostosten välttäminen"] }] },
+    { id: "q6", s: S[2], type: "multi", max: 2, h: ["Select up to 2.", "Valitse enintään 2."],
+      t: ["What makes it difficult for you to live in a more environmentally friendly way?", "Mikä tekee sinulle vaikeaksi elää ympäristöystävällisemmin?"],
+      o: [["I don't have enough knowledge", "Minulla ei ole tarpeeksi tietoa"], ["It takes too much time or effort", "Se vie liikaa aikaa tai vaivaa"],
+          ["It costs too much money", "Se maksaa liikaa"], ["I don't think my actions make a difference", "En usko, että teoillani on merkitystä"],
+          ["There are not enough opportunities or facilities", "Mahdollisuuksia tai palveluja ei ole tarpeeksi"],
+          ["I simply don't think about it very often", "En vain ajattele asiaa kovin usein"],
+          ["Nothing makes it difficult", "Mikään ei tee siitä vaikeaa"], OTHER] },
+
+    { id: "q7", s: S[3], type: "choice", t: ["How often do you learn about environmental problems at school?", "Kuinka usein opit ympäristöongelmista koulussa?"],
+      o: [["Very often", "Erittäin usein"], ["Often", "Usein"], ["Sometimes", "Joskus"], ["Rarely", "Harvoin"], ["Never", "En koskaan"]] },
+    { id: "q8", s: S[3], type: "multi", h: ["Select all that apply.", "Valitse kaikki sopivat."],
+      t: ["How do you usually learn about environmental problems?", "Miten yleensä opit ympäristöongelmista?"],
+      o: [["School lessons", "Koulun oppitunneilta"], ["Social media", "Sosiaalisesta mediasta"], ["News and websites", "Uutisista ja verkkosivuilta"],
+          ["Books and documentaries", "Kirjoista ja dokumenteista"], ["Friends and family", "Ystäviltä ja perheeltä"],
+          ["Personal experiences", "Omista kokemuksista"], OTHER] },
+    { id: "q8b", s: S[3], type: "choice",
+      t: ["Do you know about IB (International Baccalaureate) education?", "Tiedätkö, mitä IB-koulutus (International Baccalaureate) on?"],
+      o: [["Yes, I know it well", "Kyllä, tiedän sen hyvin"], ["I know a little", "Tiedän vähän"],
+          ["I have only heard the name", "Olen kuullut vain nimen"], ["No, I have never heard of it", "En ole koskaan kuullut siitä"]] },
+
+    { id: "q9", s: S[4], type: "choice",
+      t: ["Have you ever used or seen digital technology being used to help protect the environment?", "Oletko koskaan käyttänyt tai nähnyt digitaalista teknologiaa, jolla suojellaan ympäristöä?"],
+      h: ["Examples: apps for recycling, electricity monitoring systems, smart traffic systems, or AI for environmental monitoring.",
+          "Esimerkkejä: kierrätyssovellukset, sähkönkulutuksen seurantajärjestelmät, älykkäät liikennejärjestelmät tai tekoäly ympäristön seurannassa."],
+      o: [["Yes, I have used it myself", "Kyllä, olen itse käyttänyt sitä"], ["Yes, I have seen it being used", "Kyllä, olen nähnyt sen käytössä"],
+          ["I have heard about it", "Olen kuullut siitä"], ["No, never", "Ei, en koskaan"]] },
+    { id: "q10", s: S[4], type: "multi", h: ["Select all that apply.", "Valitse kaikki sopivat."],
+      t: ["Which technologies do you think could help solve environmental problems?", "Mitkä teknologiat voisivat mielestäsi auttaa ratkaisemaan ympäristöongelmia?"],
+      o: [["AI (Artificial Intelligence)", "Tekoäly"], ["Sensors and smart devices", "Anturit ja älylaitteet"],
+          ["Smartphone applications", "Älypuhelinsovellukset"], ["Big data and data analysis", "Big data ja data-analyysi"],
+          ["Satellite technology", "Satelliittiteknologia"],
+          ["Digital systems for monitoring energy consumption", "Digitaaliset energiankulutuksen seurantajärjestelmät"], DK, OTHER] },
+    { id: "q11", s: S[4], type: "choice",
+      t: ["Do you think IT technology can encourage people to take more environmentally friendly actions?", "Uskotko, että tietotekniikka voi kannustaa ihmisiä ympäristöystävällisempiin tekoihin?"], o: YN },
+    { id: "q12", s: S[4], type: "choice",
+      t: ["Do you think using IT technology itself can also have a negative impact on the environment?", "Uskotko, että tietotekniikan käytöllä voi itsessään olla myös kielteisiä vaikutuksia ympäristöön?"],
+      h: ["For example, electricity consumption by data centers, electronic waste, and the production of electronic devices.",
+          "Esimerkiksi datakeskusten sähkönkulutus, elektroniikkajäte ja elektroniikkalaitteiden valmistus."], o: YN },
+
+    { id: "q13", s: S[5], type: "text", h: OPT,
+      t: ["What is one thing you personally do to protect the environment, or would like to start doing?", "Mitä yhtä asiaa teet itse ympäristön suojelemiseksi tai haluaisit alkaa tehdä?"] },
+    { id: "q14", s: S[5], type: "text", h: OPT,
+      t: ["What do you think is the biggest reason why some people do not take action to protect the environment?", "Mikä on mielestäsi suurin syy siihen, miksi jotkut ihmiset eivät toimi ympäristön suojelemiseksi?"] },
+    { id: "q15", s: S[5], type: "text", h: OPT,
+      t: ["If you could create an app or use technology to solve one environmental problem, what would you create?", "Jos voisit luoda sovelluksen tai käyttää teknologiaa yhden ympäristöongelman ratkaisemiseen, mitä loisit?"] },
+
+    // Last question: optional. "end: true" = no auto-advance, the student can submit with or without an answer
+    { id: "age", s: S[6], type: "choice", end: true, t: ["How old are you?", "Minkä ikäinen olet?"],
+      h: ["Optional. You can finish without answering.", "Valinnainen. Voit lopettaa vastaamatta."],
+      o: [["15 or younger", "15 tai nuorempi"], ["16", "16"], ["17", "17"], ["18", "18"], ["19 or older", "19 tai vanhempi"],
+          ["Prefer not to say", "En halua kertoa"]] }
+  ]
+};
+
+/* ===== Engine ===== */
+const app = document.getElementById("app");
+const Q = SURVEY.questions;
+const qs = new URLSearchParams(location.search);
+const st = { i: SURVEY.intro ? -1 : 0, a: {}, sending: false, error: "", lock: false,
+             lang: (qs.get("lang") || SURVEY.lang) === "en" ? "en" : "fi" };
+const tx = p => p[st.lang === "fi" ? 1 : 0];
+const T = k => tx(SURVEY.ui[k]);
+document.documentElement.dataset.theme = (qs.get("theme") || SURVEY.theme) === "google" ? "google" : "digital";
+
+const el = (tag, props = {}, ...kids) => {
+  const n = Object.assign(document.createElement(tag), props);
+  kids.forEach(k => n.append(k));
+  return n;
+};
+
+function langBar() {
+  const b = el("div", { className: "lang" });
+  b.setAttribute("role", "group"); b.setAttribute("aria-label", "Kieli / Language");
+  [["fi", "Suomi"], ["en", "English"]].forEach(([c, n]) => {
+    const x = el("button", { type: "button", textContent: n, onclick: () => { st.lang = c; render(); } });
+    x.setAttribute("aria-pressed", String(st.lang === c));
+    b.append(x);
+  });
+  return b;
+}
+
+function frame(content) {
+  const pct = Math.round((st.i / Q.length) * 100);
+  const bar = el("div", { className: "bar" }, el("i", { style: `width:${pct}%` }));
+  bar.setAttribute("role", "progressbar");
+  bar.setAttribute("aria-valuenow", pct);
+  const count = el("p", { className: "count" }, `${st.i + 1} / ${Q.length}`);
+  return [el("p", { className: "site" }, tx(SURVEY.title)), bar, el("div", { className: "card" }, count, content)];
+}
+
+function introView() {
+  return [el("p", { className: "site i" }, tx(SURVEY.title)),
+    el("div", { className: "card intro" }, el("h1", { tabIndex: -1 }, tx(SURVEY.title)),
+      ...SURVEY.intro.map(p => el("p", {}, tx(p))),
+      el("button", { className: "btn", type: "button", onclick: () => go(0) }, T("start")))];
+}
+
+function go(i) { st.i = i; st.error = ""; st.lock = false; render(); }
+function advance() { st.i + 1 < Q.length ? go(st.i + 1) : submit(); }
+function choose(q, v) {
+  if (st.lock) return;
+  st.lock = true; st.a[q.id] = v;
+  setTimeout(advance, 200); // show the selection for a moment, then move on
+}
+
+function view() {
+  const q = Q[st.i];
+  const fs = el("fieldset");
+  fs.append(el("legend", { tabIndex: -1 }, tx(q.t)));
+  if (q.h) fs.append(el("p", { className: "hint" }, tx(q.h)));
+
+  if (q.type === "choice") {
+    const box = el("div", { className: "opts" });
+    const btn = q.end ? el("button", { className: "btn", type: "button", onclick: advance }) : null;
+    const lab = () => { if (btn) btn.textContent = st.sending ? T("sending") : st.a[q.id] ? T("send") : T("sendEmpty"); };
+    q.o.forEach(o => {
+      const r = el("input", { type: "radio", name: q.id, value: o[0], checked: st.a[q.id] === o[0] });
+      r.onchange = () => { if (q.end) { st.a[q.id] = o[0]; lab(); } else choose(q, o[0]); };
+      box.append(el("label", { className: "opt" }, r, el("span", {}, tx(o))));
+    });
+    fs.append(box);
+    if (btn) { btn.disabled = st.sending; lab(); fs.append(btn); }
+  }
+
+  if (q.type === "multi") {
+    const sel = new Set(st.a[q.id] ? st.a[q.id].split(" | ") : []);
+    const box = el("div", { className: "opts" });
+    const next = el("button", { className: "btn", type: "button", onclick: advance }, T("next"));
+    const sync = () => {
+      box.querySelectorAll("input").forEach(i => {
+        const off = !!(q.max && sel.size >= q.max && !i.checked); // 必ず true/false にする（undefinedだとtoggleが反転する）
+        i.disabled = off; i.closest("label").classList.toggle("dis", off);
+      });
+      next.disabled = sel.size === 0;
+      if (sel.size) st.a[q.id] = [...sel].join(" | "); else delete st.a[q.id];
+    };
+    q.o.forEach(o => {
+      const c = el("input", { type: "checkbox", value: o[0], checked: sel.has(o[0]) });
+      c.onchange = () => { c.checked ? sel.add(o[0]) : sel.delete(o[0]); sync(); };
+      box.append(el("label", { className: "opt" }, c, el("span", {}, tx(o))));
+    });
+    fs.append(box, next); sync();
+  }
+
+  if (q.type === "grid") {
+    const next = el("button", { className: "btn", type: "button", onclick: advance }, T("next"));
+    const done = () => q.rows.every(r => st.a[q.id + "_" + r.k]);
+    next.disabled = !done();
+    fs.querySelector(".hint")?.append(el("br"), q.cols.map((c, n) => `${n + 1} = ${tx(c)}`).join(" · "));
+    q.rows.forEach(r => {
+      const key = q.id + "_" + r.k, box = el("div", { className: "scale" });
+      q.cols.forEach((c, n) => {
+        const inp = el("input", { type: "radio", name: key, value: c[0], checked: st.a[key] === c[0] });
+        inp.setAttribute("aria-label", tx(c));
+        inp.onchange = () => { st.a[key] = c[0]; next.disabled = !done(); };
+        box.append(el("label", { className: "opt" }, inp, String(n + 1)));
+      });
+      fs.append(el("div", { className: "row" }, el("b", {}, tx(r.t)), box));
+    });
+    fs.append(next);
+  }
+
+  if (q.type === "text") {
+    const ta = el("textarea", { value: st.a[q.id] || "", maxLength: 500 });
+    ta.setAttribute("aria-label", tx(q.t));
+    const btn = el("button", { className: "btn", type: "button", onclick: advance });
+    const label = () => { btn.textContent = st.sending ? T("sending") : ta.value.trim() ? T("next") : T("skip"); };
+    ta.oninput = () => { st.a[q.id] = ta.value; label(); };
+    btn.disabled = st.sending; label();
+    fs.append(ta, btn);
+  }
+
+  const wrap = el("div", {}, q.s ? el("p", { className: "sec" }, tx(q.s)) : "", fs);
+  if (st.error) wrap.append(el("p", { className: "msg", role: "alert" }, st.error));
+  if (st.i > (SURVEY.intro ? -1 : 0) && !st.sending) wrap.append(el("button", { className: "back", type: "button", onclick: () => go(st.i - 1) }, T("back")));
+  return wrap;
+}
+
+function render() {
+  document.documentElement.lang = st.lang;
+  document.title = tx(SURVEY.title);
+  app.replaceChildren(langBar(), ...(st.i < 0 ? introView() : frame(view())));
+  app.querySelector("legend, .intro h1")?.focus({ preventScroll: true });
+  window.scrollTo(0, 0);
+}
+
+// Always send every column, in question order, so the spreadsheet columns stay tidy
+function ordered() {
+  const o = { lang: st.lang }; // which language the student used
+  Q.forEach(q => q.type === "grid"
+    ? q.rows.forEach(r => { const k = q.id + "_" + r.k; o[k] = st.a[k] ?? ""; })
+    : (o[q.id] = st.a[q.id] ?? ""));
+  return o;
+}
+
+async function submit() {
+  if (st.sending) return;
+  st.sending = true; st.error = ""; render();
+  const body = JSON.stringify({ survey: SURVEY.id, answers: ordered() });
+  try {
+    if (SURVEY.endpoint) {
+      // text/plain avoids the CORS preflight request, which makes sending faster
+      await fetch(SURVEY.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body });
+    } else {
+      console.log("DEMO (not sent):", body);
+    }
+    finish();
+  } catch (e) {
+    st.sending = false; st.error = T("error"); render();
+  }
+}
+
+function finish() {
+  app.replaceChildren(
+    el("p", { className: "site" }, tx(SURVEY.title)),
+    el("div", { className: "card done" }, el("h1", { tabIndex: -1 }, T("thanks")), el("p", {}, T("close"))));
+  app.querySelector("h1").focus();
+}
+
+render();
+</script>
+</body>
+</html>
