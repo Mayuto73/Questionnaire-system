@@ -121,10 +121,10 @@ const SURVEY = {
   id: "env-it-2026-11",
   lang: "fi",       // language shown first: "fi", "en" or "ja" (the URL can override it: ?lang=ja)
   theme: "digital", // "digital" or "google" (or add ?theme=google to the URL)
-  title: ["Environmental Awareness, Personal Responsibility and IT", "Ympäristötietoisuus, henkilökohtainen vastuu ja IT", "環境への意識、責任、IT"],
+  title: ["Survey on Environmental Awareness and the Use of IT", "Kysely ympäristötietoisuudesta ja tietotekniikan hyödyntämisestä", "環境問題に対する意識とIT活用に関するアンケート"],
   intro: [
     ["Hello! I am a Japanese exchange student at Alajärven lukio. I am doing a research project about environmental problems, education and IT.",
-     "Hei! Olen japanilainen vaihto-oppilas Alajärven lukiossa. Teen tutkimusprojektia ympäristöongelmista, koulutuksesta ja tietotekniikasta.", "皆さん、こんにちは。 私は現在、Alajärven lukio（アラヤルヴィ高校）に交換留学生として在籍している、まゆとと申します。 現在、環境問題・教育・ITをテーマに探究活動に取り組んでおり、その一環として本アンケートを実施しています。"],
+     "Hei! Olen japanilainen vaihto-oppilas Alajärven lukiossa. Teen tutkimusprojektia ympäristöongelmista, koulutuksesta ja tietotekniikasta.", "皆さん、こんにちは。 私は現在、Alajärven lukio（アラヤルヴィ高校）に留学生として在籍している、Mayutoと申します。 現在、環境問題・教育・ITをテーマに探究活動に取り組んでおり、その一環として本アンケートを実施しています。"],
     ["This survey is anonymous and takes about 5–7 minutes. There are no right or wrong answers, so please answer honestly. Thank you!",
      "Kysely on anonyymi, ja siihen vastaaminen kestää noin 5–7 minuuttia. Oikeita tai vääriä vastauksia ei ole, joten vastaa rehellisesti. Kiitos avusta!", "本アンケートは匿名で実施され、回答内容は探究活動の目的に限り使用いたします。なお、回答に要する時間は約2〜4分です。"]
   ],
@@ -157,8 +157,8 @@ const SURVEY = {
 
     { id: "q4", s: S[2], type: "choice",
       t: ["Do you think individual actions can make a difference in solving environmental problems?", "Uskotko, että yksittäisen ihmisen teoilla voi olla merkitystä ympäristöongelmien ratkaisemisessa?", "一人ひとりの行動が、環境問題の解決に変化をもたらせると思いますか？"],
-      o: [["Yes, definitely", "Kyllä, ehdottomasti", "はい、強くそう思う"], ["Yes, to some extent", "Kyllä, jossain määrin", "はい、ある程度はそう思う"], ["Not very much", "Ei kovin paljon", "あまりそう思わない"],
-          ["No, not at all", "Ei, ei lainkaan", "いいえ、まったくそう思わない"], DK] },
+      o: [["Yes, definitely", "Kyllä, ehdottomasti", "強くそう思う"], ["Yes, to some extent", "Kyllä, jossain määrin", "ある程度はそう思う"], ["Not very much", "Ei kovin paljon", "あまりそう思わない"],
+          ["No, not at all", "Ei, ei lainkaan", "まったくそう思わない"], DK] },
     { id: "q5", s: S[2], type: "grid",
       t: ["How often do you do the following things in your daily life?", "Kuinka usein teet seuraavia asioita arjessasi?", "次のことを、日常生活でどのくらいの頻度で行っていますか？"],
       h: ["Choose one answer for each activity.", "Valitse yksi vaihtoehto jokaiseen toimintaan.", "それぞれの項目について、1つ選んでください。"],
@@ -216,7 +216,7 @@ const SURVEY = {
 
     // Last question: optional. "end: true" = no auto-advance, the student can submit with or without an answer
     { id: "age", s: S[6], type: "choice", end: true, t: ["How old are you?", "Minkä ikäinen olet?", "何歳ですか？"],
-      h: ["Optional. You can finish without answering.", "Valinnainen. Voit lopettaa vastaamatta.", "任意です。答えなくても終われます。"],
+      h: ["Optional. You can finish without answering.", "Valinnainen. Voit lopettaa vastaamatta.", "任意、答えなくても大丈夫です"],
       o: [["15 or younger", "15 tai nuorempi", "15歳以下"], ["16", "16", "16歳"], ["17", "17", "17歳"], ["18", "18", "18歳"], ["19 or older", "19 tai vanhempi", "19歳以上"],
           ["Prefer not to say", "En halua kertoa", "答えたくない"]] }
   ]
