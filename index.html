@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kysely / Survey</title>
+<title>Kysely / Survey / アンケート</title>
 <style>
 /* デジタル庁デザインシステムのトークンに合わせた値。
    正式採用時は公式リポジトリの global.css と各コンポーネントCSSに差し替えてください。 */
@@ -101,124 +101,124 @@ html:not([data-theme="google"]) .site.i{display:none}
 
 <script>
 /* ===== Survey settings: edit only this part to make another survey =====
-   Every text is a pair [English, Finnish]. Answers are always saved in English,
+   Every text is a triple [English, Finnish, Japanese]. Answers are always saved in English,
    so the spreadsheet stays consistent whichever language the student used. */
 const S = {
-  a: ["Before we start", "Aluksi"],
-  1: ["Section 1: Environmental Awareness", "Osio 1: Ympäristötietoisuus"],
-  2: ["Section 2: Personal Responsibility and Daily Life", "Osio 2: Henkilökohtainen vastuu ja arki"],
-  3: ["Section 3: Environmental Education", "Osio 3: Ympäristökasvatus"],
-  4: ["Section 4: IT × Environment", "Osio 4: IT × ympäristö"],
-  5: ["Section 5: Your Ideas and Opinions", "Osio 5: Ideasi ja mielipiteesi"],
-  6: ["About you", "Sinusta"]
+  a: ["Before we start", "Aluksi", "はじめに"],
+  1: ["Section 1: Environmental Awareness", "Osio 1: Ympäristötietoisuus", "セクション1：環境への意識"],
+  2: ["Section 2: Personal Responsibility and Daily Life", "Osio 2: Henkilökohtainen vastuu ja arki", "セクション2：一人ひとりの責任と日常生活"],
+  3: ["Section 3: Environmental Education", "Osio 3: Ympäristökasvatus", "セクション3：環境教育"],
+  4: ["Section 4: IT × Environment", "Osio 4: IT × ympäristö", "セクション4：IT × 環境"],
+  5: ["Section 5: Your Ideas and Opinions", "Osio 5: Ideasi ja mielipiteesi", "セクション5：考えや意見"],
+  6: ["About you", "Sinusta", "あなたについて"]
 };
-const OTHER = ["Other", "Muu"], DK = ["I don't know", "En osaa sanoa"];
-const YN = [["Yes, definitely", "Kyllä, ehdottomasti"], ["Yes, to some extent", "Kyllä, jossain määrin"],
-            ["Not very much", "Ei kovin paljon"], ["No", "Ei"], DK];
-const OPT = ["Optional · 1–3 sentences", "Valinnainen · 1–3 virkettä"];
+const OTHER = ["Other", "Muu", "その他"], DK = ["I don't know", "En osaa sanoa", "わからない"];
+const YN = [["Yes, definitely", "Kyllä, ehdottomasti", "はい、強くそう思う"], ["Yes, to some extent", "Kyllä, jossain määrin", "はい、ある程度はそう思う"],
+            ["Not very much", "Ei kovin paljon", "あまりそう思わない"], ["No", "Ei", "いいえ、そう思わない"], DK];
+const OPT = ["Optional · 1–3 sentences", "Valinnainen · 1–3 virkettä", "任意・1〜3文"];
 
 const SURVEY = {
   id: "env-it-2026-11",
-  lang: "fi",       // language shown first: "fi" or "en" (the URL can override it: ?lang=en)
+  lang: "fi",       // language shown first: "fi", "en" or "ja" (the URL can override it: ?lang=ja)
   theme: "digital", // "digital" or "google" (or add ?theme=google to the URL)
-  title: ["Environmental Awareness, Personal Responsibility and IT", "Ympäristötietoisuus, henkilökohtainen vastuu ja IT"],
+  title: ["Environmental Awareness, Personal Responsibility and IT", "Ympäristötietoisuus, henkilökohtainen vastuu ja IT", "環境への意識、責任、IT"],
   intro: [
     ["Hello! I am a Japanese exchange student at Alajärven lukio. I am doing a research project about environmental problems, education and IT.",
-     "Hei! Olen japanilainen vaihto-oppilas Alajärven lukiossa. Teen tutkimusprojektia ympäristöongelmista, koulutuksesta ja tietotekniikasta."],
-    ["This survey is anonymous and takes about 2-4 minutes. There are no right or wrong answers, so please answer honestly. Thank you!",
-     "Kysely on anonyymi, ja siihen vastaaminen kestää noin 2-4 minuuttia. Oikeita tai vääriä vastauksia ei ole, joten vastaa rehellisesti. Kiitos avusta!"]
+     "Hei! Olen japanilainen vaihto-oppilas Alajärven lukiossa. Teen tutkimusprojektia ympäristöongelmista, koulutuksesta ja tietotekniikasta.", "みなさんこんにちは。私はAlajärven lukio（アラヤルヴィ高校）に通っている、交換留学生のまゆとといいます。環境問題・教育・ITをテーマにした探究活動を行っています。"],
+    ["This survey is anonymous and takes about 5–7 minutes. There are no right or wrong answers, so please answer honestly. Thank you!",
+     "Kysely on anonyymi, ja siihen vastaaminen kestää noin 5–7 minuuttia. Oikeita tai vääriä vastauksia ei ole, joten vastaa rehellisesti. Kiitos avusta!", "このアンケートは匿名で、回答は探究活動のためだけに使用します。回答にかかる時間は2〜4分ほどです。"]
   ],
   ui: {
-    start: ["Start", "Aloita"], next: ["Next", "Seuraava"], back: ["Back", "Takaisin"],
-    send: ["Submit", "Lähetä"], skip: ["Skip", "Ohita"], sendEmpty: ["Submit without answering", "Lähetä vastaamatta"],
-    sending: ["Sending…", "Lähetetään…"],
-    error: ["Could not send. Please check your connection and try again.", "Lähetys epäonnistui. Tarkista verkkoyhteys ja yritä uudelleen."],
-    thanks: ["Thank you for answering!", "Kiitos vastauksistasi!"],
+    start: ["Start", "Aloita", "はじめる"], next: ["Next", "Seuraava", "次へ"], back: ["Back", "Takaisin", "戻る"],
+    send: ["Submit", "Lähetä", "送信する"], skip: ["Skip", "Ohita", "スキップ"], sendEmpty: ["Submit without answering", "Lähetä vastaamatta", "回答せずに送信"],
+    sending: ["Sending…", "Lähetetään…", "送信中…"],
+    error: ["Could not send. Please check your connection and try again.", "Lähetys epäonnistui. Tarkista verkkoyhteys ja yritä uudelleen.", "送信できませんでした。通信状況を確認して、もう一度お試しください。"],
+    thanks: ["Thank you for answering!", "Kiitos vastauksistasi!", "ご回答ありがとうございました！"],
     close: ["Your answers will help me understand how young people think about environmental problems and IT. You can close this page now.",
-            "Vastauksesi auttavat minua ymmärtämään, miten nuoret ajattelevat ympäristöongelmista ja tietotekniikasta. Voit nyt sulkea tämän sivun."]
+            "Vastauksesi auttavat minua ymmärtämään, miten nuoret ajattelevat ympäristöongelmista ja tietotekniikasta. Voit nyt sulkea tämän sivun.", "いただいた回答は、若者が環境問題やITについてどう考えているかを知るために役立てさせていただきます。このページは閉じてもらって大丈夫です。"]
   },
   endpoint: "https://script.google.com/macros/s/AKfycbxTeJREL-Uvc7IFliio-h84QwXSKzrrhw6k-_k67jubqu6Yi2VDvcH4TKEB6JY7Tg_7/exec", // URL of the Apps Script web app. Empty = demo mode (nothing is sent)
   questions: [
-    { id: "q0", s: S.a, type: "choice", t: ["Do you know the country Japan?", "Tunnetko Japanin maana?"],
-      o: [["Yes, I know it well", "Kyllä, tunnen sen hyvin"], ["I know a little", "Tunnen sen vähän"],
-          ["I have only heard the name", "Olen kuullut vain nimen"], ["No, I do not know it", "En, en tunne sitä"]] },
+    { id: "q0", s: S.a, type: "choice", t: ["Do you know the country Japan?", "Tunnetko Japanin maana?", "日本という国を知っていますか？"],
+      o: [["Yes, I know it well", "Kyllä, tunnen sen hyvin", "よく知っている"], ["I know a little", "Tunnen sen vähän", "少し知っている"],
+          ["I have only heard the name", "Olen kuullut vain nimen", "名前は聞いたことがある"], ["No, I do not know it", "En, en tunne sitä", "知らない"]] },
 
-    { id: "q1", s: S[1], type: "choice", t: ["How interested are you in environmental problems?", "Kuinka kiinnostunut olet ympäristöongelmista?"],
-      o: [["Very interested", "Erittäin kiinnostunut"], ["Somewhat interested", "Jonkin verran kiinnostunut"],
-          ["Not very interested", "En kovin kiinnostunut"], ["Not interested at all", "En lainkaan kiinnostunut"]] },
-    { id: "q2", s: S[1], type: "multi", max: 3, h: ["Select up to 3.", "Valitse enintään 3."],
-      t: ["Which environmental problems are you most concerned about?", "Mitkä ympäristöongelmat huolestuttavat sinua eniten?"],
-      o: [["Climate change / Global warming", "Ilmastonmuutos / ilmaston lämpeneminen"], ["Plastic pollution", "Muovisaaste"],
-          ["Deforestation", "Metsäkato"], ["Air pollution", "Ilmansaasteet"], ["Water pollution", "Vesien saastuminen"],
-          ["Loss of biodiversity", "Luonnon monimuotoisuuden väheneminen"], ["Food waste", "Ruokahävikki"],
-          ["Energy consumption", "Energiankulutus"], OTHER] },
-    { id: "q3", s: S[1], type: "choice", t: ["How much do you know about environmental problems and their causes?", "Kuinka paljon tiedät ympäristöongelmista ja niiden syistä?"],
-      o: [["A lot", "Paljon"], ["Some", "Jonkin verran"], ["A little", "Vähän"], ["Almost nothing", "Lähes ei mitään"]] },
+    { id: "q1", s: S[1], type: "choice", t: ["How interested are you in environmental problems?", "Kuinka kiinnostunut olet ympäristöongelmista?", "環境問題にどのくらい関心がありますか？"],
+      o: [["Very interested", "Erittäin kiinnostunut", "とても関心がある"], ["Somewhat interested", "Jonkin verran kiinnostunut", "やや関心がある"],
+          ["Not very interested", "En kovin kiinnostunut", "あまり関心がない"], ["Not interested at all", "En lainkaan kiinnostunut", "まったく関心がない"]] },
+    { id: "q2", s: S[1], type: "multi", max: 3, h: ["Select up to 3.", "Valitse enintään 3.", "最大3つまで選んでください。"],
+      t: ["Which environmental problems are you most concerned about?", "Mitkä ympäristöongelmat huolestuttavat sinua eniten?", "あなたが懸念している環境問題はなんですか？"],
+      o: [["Climate change / Global warming", "Ilmastonmuutos / ilmaston lämpeneminen", "気候変動・地球温暖化"], ["Plastic pollution", "Muovisaaste", "プラスチック汚染"],
+          ["Deforestation", "Metsäkato", "森林破壊"], ["Air pollution", "Ilmansaasteet", "大気汚染"], ["Water pollution", "Vesien saastuminen", "水質汚染"],
+          ["Loss of biodiversity", "Luonnon monimuotoisuuden väheneminen", "生物多様性の損失"], ["Food waste", "Ruokahävikki", "食品ロス"],
+          ["Energy consumption", "Energiankulutus", "エネルギー消費"], OTHER] },
+    { id: "q3", s: S[1], type: "choice", t: ["How much do you know about environmental problems and their causes?", "Kuinka paljon tiedät ympäristöongelmista ja niiden syistä?", "環境問題とその原因について、どのくらい知っていますか？"],
+      o: [["A lot", "Paljon", "たくさん知っている"], ["Some", "Jonkin verran", "ある程度知っている"], ["A little", "Vähän", "少し知っている"], ["Almost nothing", "Lähes ei mitään", "ほとんど知らない"]] },
 
     { id: "q4", s: S[2], type: "choice",
-      t: ["Do you think individual actions can make a difference in solving environmental problems?", "Uskotko, että yksittäisen ihmisen teoilla voi olla merkitystä ympäristöongelmien ratkaisemisessa?"],
-      o: [["Yes, definitely", "Kyllä, ehdottomasti"], ["Yes, to some extent", "Kyllä, jossain määrin"], ["Not very much", "Ei kovin paljon"],
-          ["No, not at all", "Ei, ei lainkaan"], DK] },
+      t: ["Do you think individual actions can make a difference in solving environmental problems?", "Uskotko, että yksittäisen ihmisen teoilla voi olla merkitystä ympäristöongelmien ratkaisemisessa?", "一人ひとりの行動が、環境問題の解決に変化をもたらせると思いますか？"],
+      o: [["Yes, definitely", "Kyllä, ehdottomasti", "はい、強くそう思う"], ["Yes, to some extent", "Kyllä, jossain määrin", "はい、ある程度はそう思う"], ["Not very much", "Ei kovin paljon", "あまりそう思わない"],
+          ["No, not at all", "Ei, ei lainkaan", "いいえ、まったくそう思わない"], DK] },
     { id: "q5", s: S[2], type: "grid",
-      t: ["How often do you do the following things in your daily life?", "Kuinka usein teet seuraavia asioita arjessasi?"],
-      h: ["Choose one answer for each activity.", "Valitse yksi vaihtoehto jokaiseen toimintaan."],
-      cols: [["Always", "Aina"], ["Often", "Usein"], ["Sometimes", "Joskus"], ["Rarely", "Harvoin"], ["Never", "Ei koskaan"]],
-      rows: [{ k: "recycling", t: ["Recycling waste", "Jätteiden kierrättäminen"] },
-             { k: "electricity", t: ["Saving electricity", "Sähkön säästäminen"] },
-             { k: "foodwaste", t: ["Avoiding food waste", "Ruokahävikin välttäminen"] },
-             { k: "transport", t: ["Using public transportation or cycling", "Julkisen liikenteen käyttäminen tai pyöräily"] },
-             { k: "purchases", t: ["Avoiding unnecessary purchases", "Tarpeettomien ostosten välttäminen"] }] },
-    { id: "q6", s: S[2], type: "multi", max: 2, h: ["Select up to 2.", "Valitse enintään 2."],
-      t: ["What makes it difficult for you to live in a more environmentally friendly way?", "Mikä tekee sinulle vaikeaksi elää ympäristöystävällisemmin?"],
-      o: [["I don't have enough knowledge", "Minulla ei ole tarpeeksi tietoa"], ["It takes too much time or effort", "Se vie liikaa aikaa tai vaivaa"],
-          ["It costs too much money", "Se maksaa liikaa"], ["I don't think my actions make a difference", "En usko, että teoillani on merkitystä"],
-          ["There are not enough opportunities or facilities", "Mahdollisuuksia tai palveluja ei ole tarpeeksi"],
-          ["I simply don't think about it very often", "En vain ajattele asiaa kovin usein"],
-          ["Nothing makes it difficult", "Mikään ei tee siitä vaikeaa"], OTHER] },
+      t: ["How often do you do the following things in your daily life?", "Kuinka usein teet seuraavia asioita arjessasi?", "次のことを、日常生活でどのくらいの頻度で行っていますか？"],
+      h: ["Choose one answer for each activity.", "Valitse yksi vaihtoehto jokaiseen toimintaan.", "それぞれの項目について、1つ選んでください。"],
+      cols: [["Always", "Aina", "いつも"], ["Often", "Usein", "よく"], ["Sometimes", "Joskus", "ときどき"], ["Rarely", "Harvoin", "めったにない"], ["Never", "Ei koskaan", "まったくない"]],
+      rows: [{ k: "recycling", t: ["Recycling waste", "Jätteiden kierrättäminen", "ごみの分別・リサイクル"] },
+             { k: "electricity", t: ["Saving electricity", "Sähkön säästäminen", "節電"] },
+             { k: "foodwaste", t: ["Avoiding food waste", "Ruokahävikin välttäminen", "食べ物を無駄にしない"] },
+             { k: "transport", t: ["Using public transportation or cycling", "Julkisen liikenteen käyttäminen tai pyöräily", "公共交通機関や自転車を使う"] },
+             { k: "purchases", t: ["Avoiding unnecessary purchases", "Tarpeettomien ostosten välttäminen", "不要な買い物を避ける"] }] },
+    { id: "q6", s: S[2], type: "multi", max: 2, h: ["Select up to 2.", "Valitse enintään 2.", "最大2つまで選んでください。"],
+      t: ["What makes it difficult for you to live in a more environmentally friendly way?", "Mikä tekee sinulle vaikeaksi elää ympäristöystävällisemmin?", "環境にやさしい暮らしをするうえで、難しいと感じる理由は何ですか？"],
+      o: [["I don't have enough knowledge", "Minulla ei ole tarpeeksi tietoa", "知識が足りない"], ["It takes too much time or effort", "Se vie liikaa aikaa tai vaivaa", "時間や手間がかかりすぎる"],
+          ["It costs too much money", "Se maksaa liikaa", "お金がかかりすぎる"], ["I don't think my actions make a difference", "En usko, että teoillani on merkitystä", "自分の行動で変わるとは思えない"],
+          ["There are not enough opportunities or facilities", "Mahdollisuuksia tai palveluja ei ole tarpeeksi", "機会や設備が足りない"],
+          ["I simply don't think about it very often", "En vain ajattele asiaa kovin usein", "そもそもあまり考えない"],
+          ["Nothing makes it difficult", "Mikään ei tee siitä vaikeaa", "難しいと感じることはない"], OTHER] },
 
-    { id: "q7", s: S[3], type: "choice", t: ["How often do you learn about environmental problems at school?", "Kuinka usein opit ympäristöongelmista koulussa?"],
-      o: [["Very often", "Erittäin usein"], ["Often", "Usein"], ["Sometimes", "Joskus"], ["Rarely", "Harvoin"], ["Never", "En koskaan"]] },
-    { id: "q8", s: S[3], type: "multi", h: ["Select all that apply.", "Valitse kaikki sopivat."],
-      t: ["How do you usually learn about environmental problems?", "Miten yleensä opit ympäristöongelmista?"],
-      o: [["School lessons", "Koulun oppitunneilta"], ["Social media", "Sosiaalisesta mediasta"], ["News and websites", "Uutisista ja verkkosivuilta"],
-          ["Books and documentaries", "Kirjoista ja dokumenteista"], ["Friends and family", "Ystäviltä ja perheeltä"],
-          ["Personal experiences", "Omista kokemuksista"], OTHER] },
+    { id: "q7", s: S[3], type: "choice", t: ["How often do you learn about environmental problems at school?", "Kuinka usein opit ympäristöongelmista koulussa?", "学校で環境問題について学ぶ頻度はどのくらいですか？"],
+      o: [["Very often", "Erittäin usein", "とてもよく"], ["Often", "Usein", "よく"], ["Sometimes", "Joskus", "ときどき"], ["Rarely", "Harvoin", "めったにない"], ["Never", "En koskaan", "まったくない"]] },
+    { id: "q8", s: S[3], type: "multi", h: ["Select all that apply.", "Valitse kaikki sopivat.", "当てはまるものをすべて選んでください。"],
+      t: ["How do you usually learn about environmental problems?", "Miten yleensä opit ympäristöongelmista?", "環境問題について、ふだんどのように学んでいますか？"],
+      o: [["School lessons", "Koulun oppitunneilta", "学校の授業"], ["Social media", "Sosiaalisesta mediasta", "SNS"], ["News and websites", "Uutisista ja verkkosivuilta", "ニュースやウェブサイト"],
+          ["Books and documentaries", "Kirjoista ja dokumenteista", "本やドキュメンタリー"], ["Friends and family", "Ystäviltä ja perheeltä", "友達や家族"],
+          ["Personal experiences", "Omista kokemuksista", "自分自身の経験"], OTHER] },
     { id: "q8b", s: S[3], type: "choice",
-      t: ["Do you know about IB (International Baccalaureate) education?", "Tiedätkö, mitä IB-koulutus (International Baccalaureate) on?"],
-      o: [["Yes, I know it well", "Kyllä, tiedän sen hyvin"], ["I know a little", "Tiedän vähän"],
-          ["I have only heard the name", "Olen kuullut vain nimen"], ["No, I have never heard of it", "En ole koskaan kuullut siitä"]] },
+      t: ["Do you know about IB (International Baccalaureate) education?", "Tiedätkö, mitä IB-koulutus (International Baccalaureate) on?", "IB（国際バカロレア）教育について知っていますか？"],
+      o: [["Yes, I know it well", "Kyllä, tiedän sen hyvin", "よく知っている"], ["I know a little", "Tiedän vähän", "少し知っている"],
+          ["I have only heard the name", "Olen kuullut vain nimen", "名前は聞いたことがある"], ["No, I have never heard of it", "En ole koskaan kuullut siitä", "聞いたことがない"]] },
 
     { id: "q9", s: S[4], type: "choice",
-      t: ["Have you ever used or seen digital technology being used to help protect the environment?", "Oletko koskaan käyttänyt tai nähnyt digitaalista teknologiaa, jolla suojellaan ympäristöä?"],
+      t: ["Have you ever used or seen digital technology being used to help protect the environment?", "Oletko koskaan käyttänyt tai nähnyt digitaalista teknologiaa, jolla suojellaan ympäristöä?", "環境を守るためにデジタル技術が使われているのを、使ったり見たりしたことはありますか？"],
       h: ["Examples: apps for recycling, electricity monitoring systems, smart traffic systems, or AI for environmental monitoring.",
-          "Esimerkkejä: kierrätyssovellukset, sähkönkulutuksen seurantajärjestelmät, älykkäät liikennejärjestelmät tai tekoäly ympäristön seurannassa."],
-      o: [["Yes, I have used it myself", "Kyllä, olen itse käyttänyt sitä"], ["Yes, I have seen it being used", "Kyllä, olen nähnyt sen käytössä"],
-          ["I have heard about it", "Olen kuullut siitä"], ["No, never", "Ei, en koskaan"]] },
-    { id: "q10", s: S[4], type: "multi", h: ["Select all that apply.", "Valitse kaikki sopivat."],
-      t: ["Which technologies do you think could help solve environmental problems?", "Mitkä teknologiat voisivat mielestäsi auttaa ratkaisemaan ympäristöongelmia?"],
-      o: [["AI (Artificial Intelligence)", "Tekoäly"], ["Sensors and smart devices", "Anturit ja älylaitteet"],
-          ["Smartphone applications", "Älypuhelinsovellukset"], ["Big data and data analysis", "Big data ja data-analyysi"],
-          ["Satellite technology", "Satelliittiteknologia"],
-          ["Digital systems for monitoring energy consumption", "Digitaaliset energiankulutuksen seurantajärjestelmät"], DK, OTHER] },
+          "Esimerkkejä: kierrätyssovellukset, sähkönkulutuksen seurantajärjestelmät, älykkäät liikennejärjestelmät tai tekoäly ympäristön seurannassa.", "例：リサイクルのアプリ、電力の見える化システム、スマート交通システム、環境モニタリングのAIなど。"],
+      o: [["Yes, I have used it myself", "Kyllä, olen itse käyttänyt sitä", "はい、自分で使ったことがある"], ["Yes, I have seen it being used", "Kyllä, olen nähnyt sen käytössä", "はい、使われているのを見たことがある"],
+          ["I have heard about it", "Olen kuullut siitä", "話を聞いたことがある"], ["No, never", "Ei, en koskaan", "いいえ、一度もない"]] },
+    { id: "q10", s: S[4], type: "multi", h: ["Select all that apply.", "Valitse kaikki sopivat.", "当てはまるものをすべて選んでください。"],
+      t: ["Which technologies do you think could help solve environmental problems?", "Mitkä teknologiat voisivat mielestäsi auttaa ratkaisemaan ympäristöongelmia?", "環境問題の解決に役立ちそうな技術はどれだと思いますか？"],
+      o: [["AI (Artificial Intelligence)", "Tekoäly", "AI（人工知能）"], ["Sensors and smart devices", "Anturit ja älylaitteet", "センサーとスマート機器"],
+          ["Smartphone applications", "Älypuhelinsovellukset", "スマートフォンのアプリ"], ["Big data and data analysis", "Big data ja data-analyysi", "ビッグデータとデータ分析"],
+          ["Satellite technology", "Satelliittiteknologia", "人工衛星の技術"],
+          ["Digital systems for monitoring energy consumption", "Digitaaliset energiankulutuksen seurantajärjestelmät", "エネルギー消費を見える化するデジタルシステム"], DK, OTHER] },
     { id: "q11", s: S[4], type: "choice",
-      t: ["Do you think IT technology can encourage people to take more environmentally friendly actions?", "Uskotko, että tietotekniikka voi kannustaa ihmisiä ympäristöystävällisempiin tekoihin?"], o: YN },
+      t: ["Do you think IT technology can encourage people to take more environmentally friendly actions?", "Uskotko, että tietotekniikka voi kannustaa ihmisiä ympäristöystävällisempiin tekoihin?", "IT技術は、人々が環境にやさしい行動をとるよう後押しできると思いますか？"], o: YN },
     { id: "q12", s: S[4], type: "choice",
-      t: ["Do you think using IT technology itself can also have a negative impact on the environment?", "Uskotko, että tietotekniikan käytöllä voi itsessään olla myös kielteisiä vaikutuksia ympäristöön?"],
+      t: ["Do you think using IT technology itself can also have a negative impact on the environment?", "Uskotko, että tietotekniikan käytöllä voi itsessään olla myös kielteisiä vaikutuksia ympäristöön?", "IT技術を使うこと自体が、環境に悪い影響を与えることもあると思いますか？"],
       h: ["For example, electricity consumption by data centers, electronic waste, and the production of electronic devices.",
-          "Esimerkiksi datakeskusten sähkönkulutus, elektroniikkajäte ja elektroniikkalaitteiden valmistus."], o: YN },
+          "Esimerkiksi datakeskusten sähkönkulutus, elektroniikkajäte ja elektroniikkalaitteiden valmistus.", "たとえば、データセンターの電力消費、電子ごみ（電子機器の廃棄物）、電子機器の製造などです。"], o: YN },
 
     { id: "q13", s: S[5], type: "text", h: OPT,
-      t: ["What is one thing you personally do to protect the environment, or would like to start doing?", "Mitä yhtä asiaa teet itse ympäristön suojelemiseksi tai haluaisit alkaa tehdä?"] },
+      t: ["What is one thing you personally do to protect the environment, or would like to start doing?", "Mitä yhtä asiaa teet itse ympäristön suojelemiseksi tai haluaisit alkaa tehdä?", "環境を守るために、あなたが実際にしていること、またはこれから始めたいことを1つ教えてください。"] },
     { id: "q14", s: S[5], type: "text", h: OPT,
-      t: ["What do you think is the biggest reason why some people do not take action to protect the environment?", "Mikä on mielestäsi suurin syy siihen, miksi jotkut ihmiset eivät toimi ympäristön suojelemiseksi?"] },
+      t: ["What do you think is the biggest reason why some people do not take action to protect the environment?", "Mikä on mielestäsi suurin syy siihen, miksi jotkut ihmiset eivät toimi ympäristön suojelemiseksi?", "環境を守る行動をとらない人がいるのは、何がいちばんの理由だと思いますか？"] },
     { id: "q15", s: S[5], type: "text", h: OPT,
-      t: ["If you could create an app or use technology to solve one environmental problem, what would you create?", "Jos voisit luoda sovelluksen tai käyttää teknologiaa yhden ympäristöongelman ratkaisemiseen, mitä loisit?"] },
+      t: ["If you could create an app or use technology to solve one environmental problem, what would you create?", "Jos voisit luoda sovelluksen tai käyttää teknologiaa yhden ympäristöongelman ratkaisemiseen, mitä loisit?", "アプリや技術を使って環境問題を1つ解決できるとしたら、何をつくりますか？"] },
 
     // Last question: optional. "end: true" = no auto-advance, the student can submit with or without an answer
-    { id: "age", s: S[6], type: "choice", end: true, t: ["How old are you?", "Minkä ikäinen olet?"],
-      h: ["Optional. You can finish without answering.", "Valinnainen. Voit lopettaa vastaamatta."],
-      o: [["15 or younger", "15 tai nuorempi"], ["16", "16"], ["17", "17"], ["18", "18"], ["19 or older", "19 tai vanhempi"],
-          ["Prefer not to say", "En halua kertoa"]] }
+    { id: "age", s: S[6], type: "choice", end: true, t: ["How old are you?", "Minkä ikäinen olet?", "何歳ですか？"],
+      h: ["Optional. You can finish without answering.", "Valinnainen. Voit lopettaa vastaamatta.", "任意です。答えなくても終われます。"],
+      o: [["15 or younger", "15 tai nuorempi", "15歳以下"], ["16", "16", "16歳"], ["17", "17", "17歳"], ["18", "18", "18歳"], ["19 or older", "19 tai vanhempi", "19歳以上"],
+          ["Prefer not to say", "En halua kertoa", "答えたくない"]] }
   ]
 };
 
@@ -227,8 +227,9 @@ const app = document.getElementById("app");
 const Q = SURVEY.questions;
 const qs = new URLSearchParams(location.search);
 const st = { i: SURVEY.intro ? -1 : 0, a: {}, sending: false, error: "", lock: false,
-             lang: (qs.get("lang") || SURVEY.lang) === "en" ? "en" : "fi" };
-const tx = p => p[st.lang === "fi" ? 1 : 0];
+             lang: ["fi", "en", "ja"].includes(qs.get("lang")) ? qs.get("lang") : SURVEY.lang };
+const IDX = { en: 0, fi: 1, ja: 2 };
+const tx = p => p[IDX[st.lang]];
 const T = k => tx(SURVEY.ui[k]);
 document.documentElement.dataset.theme = (qs.get("theme") || SURVEY.theme) === "google" ? "google" : "digital";
 
@@ -240,8 +241,8 @@ const el = (tag, props = {}, ...kids) => {
 
 function langBar() {
   const b = el("div", { className: "lang" });
-  b.setAttribute("role", "group"); b.setAttribute("aria-label", "Kieli / Language");
-  [["fi", "Suomi"], ["en", "English"]].forEach(([c, n]) => {
+  b.setAttribute("role", "group"); b.setAttribute("aria-label", "Kieli / Language / 言語");
+  [["fi", "Suomi"], ["en", "English"], ["ja", "日本語"]].forEach(([c, n]) => {
     const x = el("button", { type: "button", textContent: n, onclick: () => { st.lang = c; render(); } });
     x.setAttribute("aria-pressed", String(st.lang === c));
     b.append(x);
